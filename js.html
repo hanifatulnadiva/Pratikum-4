@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #9E2A2B, #E09F3E);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 300px;
+            margin: auto;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 5px;
+            color: white;
+        }
+        button {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+        }
+        .time {
+            font-size: 12px;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>To-Do List</h2>
+        <input type="text" id="taskInput" placeholder="Tambahkan tugas...">
+        <button onclick="addTask()">Tambah</button>
+        <ul id="taskList"></ul>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", loadTasks);
+
+        function addTask() {
+            let input = document.getElementById("taskInput");
+            let task = input.value;
+            if (task === "") {
+                alert("Tugas tidak boleh kosong!");
+                return;
+            }
+            let now = new Date();
+            let taskObj = { text: task, time: now.toLocaleDateString() + " " + now.toLocaleTimeString() };
+            saveTask(taskObj);
+            displayTask(taskObj);
+            input.value = "";
+        }
+
+        function displayTask(taskObj) {
+            let li = document.createElement("li");
+            li.innerHTML = taskObj.text + ' <span class="time">(' + taskObj.time + ')</span> <button onclick="removeTask(this)">Hapus</button>';
+            document.getElementById("taskList").appendChild(li);
+        }
+
+        function saveTask(taskObj) {
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.push(taskObj);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+
+        function loadTasks() {
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks.forEach(displayTask);
+        }
+
+        function removeTask(button) {
+            let li = button.parentElement;
+            let taskText = li.firstChild.textContent.trim();
+            li.remove();
+            let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+            tasks = tasks.filter(task => task.text !== taskText);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+        }
+    </script>
+</body>
+</html>
